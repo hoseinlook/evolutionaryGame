@@ -33,11 +33,13 @@ class Player():
                 box_lists.pop(0)
 
         mode = self.mode
-        if len(box_lists)>=2:
-            box1: BoxList = box_lists[0]
-            box2: BoxList = box_lists[1]
-            agent_position = [ self.pos[0], self.pos[1]]
-            print([box1.x, box1.gap_mid, box2.x, box2.gap_mid, agent_position[0], agent_position[1], self.v])
+        # if len(box_lists) >= 2:
+        #     box1: BoxList = box_lists[0]
+        #     box2: BoxList = box_lists[1]
+        #     agent_position = [camera + self.pos[0], self.pos[1]]
+        #     x = camera + self.pos[0]
+        #     print([(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
+        #            agent_position[1] / 500, self.v / 100])
 
         # manual control
         if self.control:
@@ -104,7 +106,7 @@ class Player():
         elif mode == 'helicopter':
             layer_sizes = [6, 20, 1]
         elif mode == 'thrust':
-            layer_sizes = [7, 20, 1]
+            layer_sizes = [6, 20, 1]
         return layer_sizes
 
     def think(self, mode, box_lists, agent_position, velocity):
@@ -129,10 +131,24 @@ class Player():
             return 0
         box1: BoxList = box_lists[0]
         box2: BoxList = box_lists[1]
+        x = agent_position[0]
+        input_array = [(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
+                       agent_position[1] / 500,
+                       velocity / 100]
+
         nn_input = np.array(
-            [[box1.x, box1.gap_mid, box2.x, box2.gap_mid, agent_position[0], agent_position[1], velocity]])
-        print(nn_input)
-        return 0
+            [input_array])
+        # print(nn_input)
+        nn_input = nn_input / np.max(np.abs(nn_input))
+        # print(nn_input)
+        out = self.nn.forward(nn_input.reshape(6, 1))
+        out = out[0][0]
+        if out > 0.5:
+            direction = 1
+        else:
+            direction = -1
+        # print("DIRECTION ", direction)
+        return direction
         pass
 
     def set_nn_weights(self, hidden_layer_weights, output_layer_weights):
