@@ -39,7 +39,7 @@ class Player():
         #     agent_position = [camera + self.pos[0], self.pos[1]]
         #     x = camera + self.pos[0]
         #     print([(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
-        #            agent_position[1] / 500, self.v / 100])
+        #            agent_position[1] / 500, self.v/5 ])
 
         # manual control
         if self.control:
@@ -122,8 +122,60 @@ class Player():
 
         if mode == 'thrust':
             direction = self.think_about_thrust_mode(box_lists, agent_position, velocity)
+
+        elif mode == 'helicopter':
+            direction = self.think_about_helicopter_mode(box_lists, agent_position, velocity)
+
+        elif mode == 'gravity':
+            direction = self.think_about_gravity_mode(box_lists, agent_position, velocity)
         else:
             direction = -1
+        return direction
+
+    def think_about_helicopter_mode(self, box_lists, agent_position, velocity):
+        if len(box_lists) == 0 or len(box_lists) == 1:
+            return 0
+        box1: BoxList = box_lists[0]
+        box2: BoxList = box_lists[1]
+        x = agent_position[0]
+        input_array = [(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
+                       agent_position[1] / 500,
+                       velocity / 5]
+
+        nn_input = np.array(
+            [input_array])
+        # print(nn_input)
+        # print(nn_input)
+        out = self.nn.forward(nn_input.reshape(6, 1))
+        out = out[0][0]
+        if out > 0.5:
+            direction = 1
+        else:
+            direction = -1
+        # print("DIRECTION ", direction)
+        return direction
+
+    def think_about_gravity_mode(self, box_lists, agent_position, velocity):
+        if len(box_lists) == 0 or len(box_lists) == 1:
+            return 0
+        box1: BoxList = box_lists[0]
+        box2: BoxList = box_lists[1]
+        x = agent_position[0]
+        input_array = [(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
+                       agent_position[1] / 500,
+                       velocity / 5]
+
+        nn_input = np.array(
+            [input_array])
+        # print(nn_input)
+        # print(nn_input)
+        out = self.nn.forward(nn_input.reshape(6, 1))
+        out = out[0][0]
+        if out > 0.5:
+            direction = 1
+        else:
+            direction = -1
+        # print("DIRECTION ", direction)
         return direction
 
     def think_about_thrust_mode(self, box_lists, agent_position, velocity):
@@ -150,9 +202,6 @@ class Player():
         # print("DIRECTION ", direction)
         return direction
         pass
-
-    def set_nn_weights(self, hidden_layer_weights, output_layer_weights):
-        self.nn.set_weights(hidden_layer_weights, output_layer_weights)
 
     def collision_detection(self, mode, box_lists, camera):
         if mode == 'helicopter':

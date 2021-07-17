@@ -2,6 +2,7 @@ import numpy as np
 from random import random
 import random
 
+
 class NeuralNetwork():
 
     def __init__(self, layer_sizes, hidden_layer_weights=None, output_layer_weights=None):
@@ -54,13 +55,12 @@ class NeuralNetwork():
         self.hidden_layer_weights = np.array([hidden_weights]).reshape(self._hidden_layer_size, self._input_layer_size)
         self.output_layer_weights = np.array([out_weights]).reshape(self._output_layer_size, self._hidden_layer_size)
 
-    def cross_over(self,other_nn,NO_points=2):
-        other_nn:NeuralNetwork
+    def cross_over_weights(self, other_nn, NO_points=2):
+        other_nn: NeuralNetwork
 
         random.choices()
 
-
-    def mutation_weights_with_a_probability(self, probability=0.6):
+    def mutation_weights_with_a_probability(self, probability=0.6, noise=0.3):
 
         # o_weights_list, h_weights_list = self.flat_weights()
         # for i in range(len(o_weights_list)):
@@ -71,11 +71,11 @@ class NeuralNetwork():
         # self.reshape_weights_from_flat(h_weights_list,o_weights_list)
 
         if probability > random.random():
-            self.hidden_layer_weights += np.random.normal(0, 0.5, self.hidden_layer_weights.shape)
-            self.hidden_layer_B += np.random.normal(0, 0.3, self.hidden_layer_B.shape)
+            self.hidden_layer_weights += np.random.normal(0, noise, self.hidden_layer_weights.shape)
+            self.hidden_layer_B += np.random.normal(0, 0.03, self.hidden_layer_B.shape)
 
-            self.output_layer_weights += np.random.normal(0, 0.5, self.output_layer_weights.shape)
-            self.output_layer_B += np.random.normal(0, 0.3, self.output_layer_B.shape)
+            self.output_layer_weights += np.random.normal(0, noise, self.output_layer_weights.shape)
+            self.output_layer_B += np.random.normal(0, 0.03, self.output_layer_B.shape)
 
 
 if __name__ == '__main__':
