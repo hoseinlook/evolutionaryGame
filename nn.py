@@ -70,12 +70,12 @@ class NeuralNetwork():
         #
         # self.reshape_weights_from_flat(h_weights_list,o_weights_list)
 
-        if probability > random():
+        if probability > random.random():
             self.hidden_layer_weights += np.random.normal(0, 0.5, self.hidden_layer_weights.shape)
-            self.hidden_layer_B += np.random.normal(0, 0.1, self.hidden_layer_B.shape)
+            self.hidden_layer_B += np.random.normal(0, 0.3, self.hidden_layer_B.shape)
 
             self.output_layer_weights += np.random.normal(0, 0.5, self.output_layer_weights.shape)
-            self.output_layer_B += np.random.normal(0, 0.1, self.output_layer_B.shape)
+            self.output_layer_B += np.random.normal(0, 0.3, self.output_layer_B.shape)
 
 
 if __name__ == '__main__':

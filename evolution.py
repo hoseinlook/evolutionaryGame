@@ -20,7 +20,7 @@ class Evolution():
 
         # TODO
         # child: an object of class `Player`
-        child.nn.mutation_weights_with_a_probability(0.5)
+        child.nn.mutation_weights_with_a_probability(0.9)
         return child
 
     def generate_new_population(self, num_players, prev_players=None):
@@ -38,7 +38,7 @@ class Evolution():
             # default
             i = 0
             while i < num_players:
-                sorted_list = sorted(random.choices(prev_players, k=7), key=lambda x: -x.fitness)
+                sorted_list = sorted(random.choices(prev_players, k=10), key=lambda x: -x.fitness)
                 new_players.append(self.mutate(deepcopy(sorted_list[0])))
                 i += 1
 
