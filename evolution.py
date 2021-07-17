@@ -1,3 +1,5 @@
+import random
+
 from player import Player
 import numpy as np
 from config import CONFIG
@@ -18,7 +20,7 @@ class Evolution():
 
         # TODO
         # child: an object of class `Player`
-        child.nn.mutation_weights_with_a_probability(0.05)
+        child.nn.mutation_weights_with_a_probability(0.5)
         return child
 
     def generate_new_population(self, num_players, prev_players=None):
@@ -34,11 +36,13 @@ class Evolution():
             # prev_players: an array of `Player` objects
 
             # default
-            sorted_list = sorted(prev_players, key=lambda x: -x.fitness)
-            for i in range(num_players):
+            i = 0
+            while i < num_players:
+                sorted_list = sorted(random.choices(prev_players, k=7), key=lambda x: -x.fitness)
                 new_players.append(self.mutate(deepcopy(sorted_list[0])))
+                i += 1
 
-            # TODO (additional): a selection method other than `fitness proportionate`
+                # TODO (additional): a selection method other than `fitness proportionate`
             # TODO (additional): implementing crossover
 
             # new_players = deepcopy(prev_players)
@@ -49,9 +53,12 @@ class Evolution():
         # TODO
         # num_players example: 100
         # players: an array of `Player` objects
-        print("NEXT ", num_players, " ", len(players))
-        players.sort(key=lambda x: - x.fitness)
-
+        selected_players=[]
+        i=0
+        while i < num_players:
+            sorted_list = sorted(random.choices(players, k=3), key=lambda x: -x.fitness)
+            selected_players.append(deepcopy(sorted_list[0]))
+            i += 1
         # TODO (additional): a selection method other than `top-k`
         # TODO (additional): plotting
-        return players[: num_players]
+        return selected_players

@@ -134,7 +134,7 @@ class Player():
         x = agent_position[0]
         input_array = [(box1.x - x) / 1000, box1.gap_mid / 500, (box2.x - x) / 1000, box2.gap_mid / 500,
                        agent_position[1] / 500,
-                       velocity / 100]
+                       velocity / 300]
 
         nn_input = np.array(
             [input_array])
