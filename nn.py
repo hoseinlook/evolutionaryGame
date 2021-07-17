@@ -1,21 +1,23 @@
 import numpy as np
+from random import random
 
 
 class NeuralNetwork():
 
-    def __init__(self, layer_sizes):
+    def __init__(self, layer_sizes, hidden_layer_weights=None, output_layer_weights=None):
         # TODO
         # layer_sizes example: [4, 10, 2]
         self._input_layer_size = layer_sizes[0]
         self._hidden_layer_size = layer_sizes[1]
         self._output_layer_size = layer_sizes[2]
 
-        self.hidden_layer_weights = np.random.randn(self._hidden_layer_size, self._input_layer_size)
-        self.output_layer_weights = np.random.randn(self._output_layer_size, self._hidden_layer_size)
-
-        # self.hidden_layer_weights=hidden_layer_weights
-        # self.output_layer_weights=output_layer_weights
-        pass
+        if output_layer_weights is None or hidden_layer_weights is None:
+            self.hidden_layer_weights = np.random.randn(self._hidden_layer_size, self._input_layer_size)
+            self.output_layer_weights = np.random.randn(self._output_layer_size, self._hidden_layer_size)
+        # print('CREATED ')
+        else:
+            self.hidden_layer_weights = hidden_layer_weights
+            self.output_layer_weights = output_layer_weights
 
     def set_weights(self, hidden_layer_weights, output_layer_weights):
         self.hidden_layer_weights = hidden_layer_weights
@@ -39,11 +41,26 @@ class NeuralNetwork():
 
         pass
 
-    def reshape_weights(self):
+    def flat_weights(self):
         flat_hidden = self.hidden_layer_weights.reshape(1, self._hidden_layer_size * self._input_layer_size)[0]
         flat_out = self.output_layer_weights.reshape(1, self._hidden_layer_size * self._output_layer_size)[0]
 
         return list(flat_out), list(flat_hidden)
+
+    def reshape_weights_from_flat(self, hidden_weights, out_weights):
+        self.hidden_layer_weights=np.array([hidden_weights]).reshape(self._hidden_layer_size, self._input_layer_size)
+        self.output_layer_weights=np.array([out_weights]).reshape(self._output_layer_size, self._hidden_layer_size)
+
+    def mutation_weights_with_a_probability(self, probability=0.9):
+
+        o_weights_list, h_weights_list = self.flat_weights()
+        for i in range(len(o_weights_list)):
+            o_weights_list[i] = np.random.randn() if random() < probability else o_weights_list[i]
+        for i in range(len(h_weights_list)):
+            h_weights_list[i] = np.random.randn() if random() < probability else h_weights_list[i]
+
+        self.reshape_weights_from_flat(h_weights_list,o_weights_list)
+
 
 
 if __name__ == '__main__':
@@ -52,11 +69,24 @@ if __name__ == '__main__':
     # print(np.random.randn(1, 10))
 
     x = NeuralNetwork([10, 10, 1])
-    print(x.forward(np.random.randn(10, 1)))
+    inputtt=np.random.randn(10, 1)
+    print(x.forward(inputtt))
     print(x.hidden_layer_weights)
     print('************************************************************')
     print('************************************************************')
     print('************************************************************')
-    print(x.hidden_layer_weights.reshape(1, 100).reshape(10, 10))
+    # print(x.hidden_layer_weights.reshape(1, 100).reshape(10, 10))
+    print(x.mutation_weights_with_a_probability(0.9))
+    print(x.hidden_layer_weights)
+    print("RESSS ", x.forward(inputtt))
+    print(x.mutation_weights_with_a_probability(0.9))
+    print(x.hidden_layer_weights)
+    print("RESSS ", x.forward(inputtt))
+    print(x.mutation_weights_with_a_probability(0.9))
+    print(x.hidden_layer_weights)
+    print("RESSS ", x.forward(inputtt))
+    print(x.mutation_weights_with_a_probability(0.9))
+    print(x.hidden_layer_weights)
+    print("RESSS ",x.forward(inputtt))
     # print(x.hidden_layer_weights.shape)
     # print((x.reshape_weights()))
