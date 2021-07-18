@@ -25,6 +25,8 @@ class Evolution():
         # child: an object of class `Player`
         if self.mode == 'helicopter':
             child.nn.mutation_weights_with_a_probability(0.9, 0.1)
+        elif self.mode == 'thrust':
+            child.nn.mutation_weights_with_a_probability(0.9, 0.1)
         else:
             child.nn.mutation_weights_with_a_probability(0.9, 0.1)
         return child
@@ -33,10 +35,10 @@ class Evolution():
         child1 = Player(self.mode)
         child2 = Player(self.mode)
 
-        weights1 , weights2= parent1.nn.cross_over_weights(parent2.nn,3)
+        weights1 , weights2= parent1.nn.cross_over_weights(parent2.nn,5)
 
-        child1.nn.set_weights(weights1)
-        child2.nn.set_weights(weights2)
+        child1.nn.set_weights(*weights1)
+        child2.nn.set_weights(*weights2)
 
         return child1 ,child2
 
@@ -57,9 +59,11 @@ class Evolution():
             # TODO (additional): a selection method other than `fitness proportionate`
             # TODO (additional): implementing crossover
             while i < num_players:
-                sorted_list = sorted(random.choices(prev_players, k=20), key=lambda x: -x.fitness)
-                new_players.append(self.mutate(deepcopy(sorted_list[0])))
-                i += 1
+                sorted_list = sorted(random.choices(prev_players, k=5), key=lambda x: -x.fitness)
+                new_player_1 ,new_player_2=self.cross_over(deepcopy(sorted_list[0]),deepcopy(sorted_list[1]))
+                new_players.append(self.mutate(new_player_1))
+                new_players.append(self.mutate(new_player_2))
+                i += 2
 
             # new_players = deepcopy(prev_players)
             return new_players
@@ -72,7 +76,7 @@ class Evolution():
         selected_players = []
         i = 0
         while i < num_players:
-            sorted_list = sorted(random.choices(players, k=10), key=lambda x: -x.fitness)
+            sorted_list = sorted(random.choices(players, k=5), key=lambda x: -x.fitness)
             selected_players.append(deepcopy(sorted_list[0]))
             i += 1
         # TODO (additional): a selection method other than `top-k`

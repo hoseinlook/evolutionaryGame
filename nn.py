@@ -60,7 +60,7 @@ class NeuralNetwork():
         slice1 = []
         slice2 = []
         point_list = sorted(random.choices(range(len(c)), k=k))
-        print(point_list)
+        # print(point_list)
         next = point_list[0]
         prev = 0
         cursor = 1
@@ -89,19 +89,13 @@ class NeuralNetwork():
         new_flat_h_nn1, new_flat_h_nn2 = self.generate_slice(flat_h_nn1, flat_h_nn2, NO_points)
         new_flat_o_nn1, new_flat_o_nn2 = self.generate_slice(flat_o_nn1, flat_o_nn2, NO_points)
 
+        assert len(new_flat_h_nn1) == len(flat_h_nn1)
+        assert len(new_flat_o_nn1) == len(flat_o_nn1)
+
         return self.reshape_weights_from_flat(new_flat_h_nn1, new_flat_o_nn1) \
             , self.reshape_weights_from_flat(new_flat_h_nn2, new_flat_o_nn2)
 
     def mutation_weights_with_a_probability(self, probability=0.6, noise=0.3):
-
-        # o_weights_list, h_weights_list = self.flat_weights()
-        # for i in range(len(o_weights_list)):
-        #     o_weights_list[i] = np.random.randn() if random() < probability else o_weights_list[i]
-        # for i in range(len(h_weights_list)):
-        #     h_weights_list[i] = np.random.randn() if random() < probability else h_weights_list[i]
-        #
-        # self.reshape_weights_from_flat(h_weights_list,o_weights_list)
-
         if probability > random.random():
             self.hidden_layer_weights += np.random.normal(0, noise, self.hidden_layer_weights.shape)
             self.hidden_layer_B += np.random.normal(0, 0.03, self.hidden_layer_B.shape)
