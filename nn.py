@@ -52,13 +52,45 @@ class NeuralNetwork():
         return list(flat_out), list(flat_hidden)
 
     def reshape_weights_from_flat(self, hidden_weights, out_weights):
-        self.hidden_layer_weights = np.array([hidden_weights]).reshape(self._hidden_layer_size, self._input_layer_size)
-        self.output_layer_weights = np.array([out_weights]).reshape(self._output_layer_size, self._hidden_layer_size)
+        hidden_layer_weights = np.array([hidden_weights]).reshape(self._hidden_layer_size, self._input_layer_size)
+        output_layer_weights = np.array([out_weights]).reshape(self._output_layer_size, self._hidden_layer_size)
+        return hidden_layer_weights, output_layer_weights
+
+    def generate_slice(self, b, c, k=2):
+        slice1 = []
+        slice2 = []
+        point_list = sorted(random.choices(range(len(c)), k=k))
+        print(point_list)
+        next = point_list[0]
+        prev = 0
+        cursor = 1
+        for i in range(k + 1):
+            if i % 2 == 0:
+                slice1.append(b[prev:next])
+                slice2.append(c[prev:next])
+            else:
+                slice1.append(c[prev:next])
+                slice2.append(b[prev:next])
+            prev = next
+            if cursor < len(point_list):
+                next = point_list[cursor]
+            else:
+                next = None
+
+            cursor += 1
+
+        return np.concatenate(slice1), np.concatenate(slice2)
 
     def cross_over_weights(self, other_nn, NO_points=2):
         other_nn: NeuralNetwork
+        flat_o_nn1, flat_h_nn1 = self.flat_weights()
+        flat_o_nn2, flat_h_nn2 = other_nn.flat_weights()
 
-        random.choices()
+        new_flat_h_nn1, new_flat_h_nn2 = self.generate_slice(flat_h_nn1, flat_h_nn2, NO_points)
+        new_flat_o_nn1, new_flat_o_nn2 = self.generate_slice(flat_o_nn1, flat_o_nn2, NO_points)
+
+        return self.reshape_weights_from_flat(new_flat_h_nn1, new_flat_o_nn1) \
+            , self.reshape_weights_from_flat(new_flat_h_nn2, new_flat_o_nn2)
 
     def mutation_weights_with_a_probability(self, probability=0.6, noise=0.3):
 

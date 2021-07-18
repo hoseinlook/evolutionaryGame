@@ -23,14 +23,22 @@ class Evolution():
 
         # TODO
         # child: an object of class `Player`
-        if self.mode =='helicopter':
-            child.nn.mutation_weights_with_a_probability(0.5,0.1)
+        if self.mode == 'helicopter':
+            child.nn.mutation_weights_with_a_probability(0.9, 0.1)
         else:
-            child.nn.mutation_weights_with_a_probability(0.9,0.1)
+            child.nn.mutation_weights_with_a_probability(0.9, 0.1)
         return child
 
-    def cross_over(self, p1, p2):
-        pass
+    def cross_over(self, parent1: Player, parent2: Player):
+        child1 = Player(self.mode)
+        child2 = Player(self.mode)
+
+        weights1 , weights2= parent1.nn.cross_over_weights(parent2.nn,3)
+
+        child1.nn.set_weights(weights1)
+        child2.nn.set_weights(weights2)
+
+        return child1 ,child2
 
     def generate_new_population(self, num_players, prev_players=None):
 
