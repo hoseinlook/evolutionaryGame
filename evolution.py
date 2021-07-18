@@ -34,8 +34,8 @@ class Evolution():
             child.nn.mutation_weights_with_a_probability(0.9, 0.5)
         elif self.mode == 'thrust':
             child.nn.mutation_weights_with_a_probability(0.9, 0.1)
-        else:
-            child.nn.mutation_weights_with_a_probability(0.9, 0.1)
+        elif self.mode == 'gravity':
+            child.nn.mutation_weights_with_a_probability(0.9, 0.5)
         return child
 
     def cross_over(self, parent1: Player, parent2: Player):
@@ -66,6 +66,8 @@ class Evolution():
             # TODO (additional): a selection method other than `fitness proportionate`
             # TODO (additional): implementing crossover
             cross_over_rate = 0.9
+            if self.mode == 'gravity':
+                cross_over_rate = 0.3
             while i < num_players:
                 if random.random() < cross_over_rate:
                     sorted_list = sorted(random.choices(prev_players, k=2), key=lambda x: -x.fitness)
@@ -89,8 +91,11 @@ class Evolution():
         # players: an array of `Player` objects
         selected_players = []
         i = 0
+        k=5
+        if self.mode == 'gravity':
+            k=3
         while i < num_players:
-            sorted_list = sorted(random.choices(players, k=5), key=lambda x: -x.fitness)
+            sorted_list = sorted(random.choices(players, k=k), key=lambda x: -x.fitness)
             selected_players.append(deepcopy(sorted_list[0]))
             i += 1
         # TODO (additional): a selection method other than `top-k`
