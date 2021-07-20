@@ -56,50 +56,83 @@ class Evolution():
             return [Player(self.mode) for _ in range(num_players)]
 
         else:
-            new_players = []
-            # TODO
-            # num_players example: 150
-            # prev_players: an array of `Player` objects
+            # q_tournament
+            # new_players = self.q_tournament_selection_with_cross_over(num_players, prev_players)
 
-            # default
-            i = 0
-            # TODO (additional): a selection method other than `fitness proportionate`
-            # TODO (additional): implementing crossover
-            cross_over_rate = 0.9
-            if self.mode == 'gravity':
-                cross_over_rate = 0.3
-            while i < num_players:
-                if random.random() < cross_over_rate:
-                    sorted_list = sorted(random.choices(prev_players, k=2), key=lambda x: -x.fitness)
-                    new_player_1, new_player_2 = self.cross_over(deepcopy(sorted_list[0]), deepcopy(sorted_list[1]))
-                    new_players.append(self.mutate(new_player_1))
-                    new_players.append(self.mutate(new_player_2))
-                else:
-                    sorted_list = sorted(random.choices(prev_players, k=5), key=lambda x: -x.fitness)
-                    new_players.append(self.mutate(deepcopy(sorted_list[0])))
-                    sorted_list = sorted(random.choices(prev_players, k=5), key=lambda x: -x.fitness)
-                    new_players.append(self.mutate(deepcopy(sorted_list[0])))
-                i += 2
+            # SUS
+            new_players = self.sus_selection_with_cross_over(num_players, prev_players)
 
-            # new_players = deepcopy(prev_players)
             return new_players
+
+    def sus_selection_with_cross_over(self, num_players, prev_players):
+        random.shuffle(prev_players)
+        sum_fitness = sum([p.fitness for p in prev_players])
+        probability_list = [p.fitness / sum_fitness for p in prev_players]
+
+        x_prob = []
+        for i, item in enumerate(probability_list):
+            if i == 0:
+                x_prob.append((0, item))
+            else:
+                x_prob.append((x_prob[i - 1][1], x_prob[i - 1][1] + item))
+
+        first_selected_number = random.random() / num_players
+        select_list = []
+        select_list.append(first_selected_number)
+        for i in range(1, num_players):
+            select_list.append(select_list[i - 1] + 1 / num_players)
+        new_players = []
+        for n in select_list:
+            selected = False
+            for i, item in enumerate(x_prob):
+                if selected is True:
+                    break
+                if item[0] <= n <= item[1]:
+                    new_players.append(self.mutate(deepcopy(prev_players[i])))
+                    selected = True
+
+            assert selected is True
+        assert len(new_players) == num_players
+
+        return new_players
+
+    def q_tournament_selection_with_cross_over(self, num_players, prev_players):
+        new_players = []
+        i = 0
+        # a selection method other than `fitness proportionate`
+        # implementing crossover
+        # q-tournament
+        cross_over_rate = 0.9
+        if self.mode == 'gravity':
+            cross_over_rate = 0.3
+        while i < num_players:
+            if random.random() < cross_over_rate:
+                sorted_list = sorted(random.choices(prev_players, k=2), key=lambda x: -x.fitness)
+                new_player_1, new_player_2 = self.cross_over(deepcopy(sorted_list[0]), deepcopy(sorted_list[1]))
+                new_players.append(self.mutate(new_player_1))
+                new_players.append(self.mutate(new_player_2))
+            else:
+                sorted_list = sorted(random.choices(prev_players, k=5), key=lambda x: -x.fitness)
+                new_players.append(self.mutate(deepcopy(sorted_list[0])))
+                sorted_list = sorted(random.choices(prev_players, k=5), key=lambda x: -x.fitness)
+                new_players.append(self.mutate(deepcopy(sorted_list[0])))
+            i += 2
+        return new_players
 
     def next_population_selection(self, players: [Player], num_players):
 
-        # TODO
-        # num_players example: 100
-        # players: an array of `Player` objects
+        # a selection method other than `top-k`
+        # q_tournament
         selected_players = []
         i = 0
-        k=5
+        k = 5
         if self.mode == 'gravity':
-            k=3
+            k = 3
         while i < num_players:
             sorted_list = sorted(random.choices(players, k=k), key=lambda x: -x.fitness)
             selected_players.append(deepcopy(sorted_list[0]))
             i += 1
-        # TODO (additional): a selection method other than `top-k`
-        # TODO (additional): plotting
+        #  plotting
         avg_fitness = sum([p.fitness for p in players]) / len(players)
         max_fitness = max([p.fitness for p in players])
         min_fitness = min([p.fitness for p in players])
@@ -108,8 +141,6 @@ class Evolution():
         self.min_fitness_list.append(min_fitness)
         self.avg_fitness_list.append(avg_fitness)
         self.generation_number += 1
-
-        # draw figure
 
         return selected_players
 
