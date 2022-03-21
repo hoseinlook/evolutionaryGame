@@ -57,10 +57,10 @@ class Evolution():
 
         else:
             # q_tournament
-            # new_players = self.q_tournament_selection_with_cross_over(num_players, prev_players)
+            new_players = self.q_tournament_selection_with_cross_over(num_players, prev_players)
 
             # SUS
-            new_players = self.sus_selection_with_cross_over(num_players, prev_players)
+            # new_players = self.sus_selection_with_cross_over(num_players, prev_players)
 
             return new_players
 

@@ -81,7 +81,7 @@ class NeuralNetwork():
 
         return np.concatenate(slice1), np.concatenate(slice2)
 
-    def cross_over_weights(self, other_nn, NO_points=2):
+    def cross_over_weights(self, other_nn, NO_points=5):
         other_nn: NeuralNetwork
         flat_o_nn1, flat_h_nn1 = self.flat_weights()
         flat_o_nn2, flat_h_nn2 = other_nn.flat_weights()
